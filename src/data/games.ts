@@ -9,6 +9,8 @@ import fortnite from "@/assets/games/fortnite.jpg";
 import pubg from "@/assets/games/pubg.jpg";
 import eldenRing from "@/assets/games/elden-ring.jpg";
 
+export type DownloadLink = { label: string; url: string };
+
 export type Game = {
   slug: string;
   title: string;
@@ -19,10 +21,16 @@ export type Game = {
   size: string;
   releaseDate: string;
   description: string;
-  trailerId: string; // YouTube ID
+  trailerId: string;
   screenshots: string[];
   systemRequirements: { label: string; value: string }[];
   store: { label: string; url: string };
+  downloads: {
+    pc?: DownloadLink;       // Microsoft Store / Steam (PC)
+    mobile?: DownloadLink;   // Google Play Store
+    ios?: DownloadLink;      // App Store
+    console?: DownloadLink;  // PS / Xbox
+  };
   tags: string[];
 };
 
@@ -47,6 +55,10 @@ export const games: Game[] = [
       { label: "GPU", value: "NVIDIA GTX 660 2GB / AMD HD 7870" },
     ],
     store: { label: "Buy on Rockstar Store", url: "https://store.rockstargames.com/game/buy-grand-theft-auto-v" },
+    downloads: {
+      pc: { label: "Get on Microsoft Store", url: "https://apps.microsoft.com/detail/9NXVJF1Q39B5" },
+      console: { label: "Buy on Rockstar Store", url: "https://store.rockstargames.com/game/buy-grand-theft-auto-v" },
+    },
     tags: ["Open World", "Action", "Multiplayer"],
   },
   {
@@ -69,6 +81,10 @@ export const games: Game[] = [
       { label: "GPU", value: "NVIDIA GTX 770 2GB / AMD R9 280" },
     ],
     store: { label: "Buy on Rockstar Store", url: "https://store.rockstargames.com/game/red-dead-redemption-2" },
+    downloads: {
+      pc: { label: "Get on Microsoft Store", url: "https://apps.microsoft.com/detail/9NWLB2T5TPV4" },
+      console: { label: "Buy on Rockstar Store", url: "https://store.rockstargames.com/game/red-dead-redemption-2" },
+    },
     tags: ["Open World", "Adventure", "Story"],
   },
   {
@@ -91,6 +107,10 @@ export const games: Game[] = [
       { label: "GPU", value: "NVIDIA GTX 1060 6GB / AMD RX 580" },
     ],
     store: { label: "Buy on Steam", url: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/" },
+    downloads: {
+      pc: { label: "Get on Microsoft Store", url: "https://apps.microsoft.com/detail/9NSSXGG1Z6FN" },
+      console: { label: "Buy on Steam", url: "https://store.steampowered.com/app/1091500/Cyberpunk_2077/" },
+    },
     tags: ["RPG", "Sci-Fi", "Open World"],
   },
   {
@@ -113,6 +133,10 @@ export const games: Game[] = [
       { label: "GPU", value: "NVIDIA GTX 960 / AMD RX 470" },
     ],
     store: { label: "Play Free on Battle.net", url: "https://www.callofduty.com/warzone" },
+    downloads: {
+      pc: { label: "Get on Microsoft Store", url: "https://apps.microsoft.com/detail/9NBLGGH4TVD0" },
+      mobile: { label: "Get on Google Play", url: "https://play.google.com/store/apps/details?id=com.activision.callofduty.warzone" },
+    },
     tags: ["FPS", "Battle Royale", "Free-to-Play"],
   },
   {
@@ -135,6 +159,9 @@ export const games: Game[] = [
       { label: "GPU", value: "Intel HD 4000" },
     ],
     store: { label: "Play Free on Riot", url: "https://playvalorant.com/" },
+    downloads: {
+      pc: { label: "Download from Riot Games", url: "https://playvalorant.com/en-us/download/" },
+    },
     tags: ["FPS", "Tactical", "Esports"],
   },
   {
@@ -157,6 +184,11 @@ export const games: Game[] = [
       { label: "GPU", value: "Intel HD 4000" },
     ],
     store: { label: "Buy on Minecraft.net", url: "https://www.minecraft.net/en-us/store/minecraft-deluxe-collection-pc" },
+    downloads: {
+      pc: { label: "Get on Microsoft Store", url: "https://apps.microsoft.com/detail/9NBLGGH2JHXJ" },
+      mobile: { label: "Get on Google Play", url: "https://play.google.com/store/apps/details?id=com.mojang.minecraftpe" },
+      ios: { label: "Get on App Store", url: "https://apps.apple.com/us/app/minecraft/id479516143" },
+    },
     tags: ["Sandbox", "Survival", "Family"],
   },
   {
@@ -179,6 +211,10 @@ export const games: Game[] = [
       { label: "GPU", value: "NVIDIA GTX 1050 Ti / AMD RX 570" },
     ],
     store: { label: "Buy on EA Store", url: "https://www.ea.com/games/ea-sports-fc/fc-25" },
+    downloads: {
+      pc: { label: "Get on Microsoft Store", url: "https://apps.microsoft.com/detail/9P3J32CTXLRZ" },
+      mobile: { label: "Get on Google Play", url: "https://play.google.com/store/apps/details?id=com.ea.gp.fifamobile" },
+    },
     tags: ["Sports", "Football", "Multiplayer"],
   },
   {
@@ -201,6 +237,10 @@ export const games: Game[] = [
       { label: "GPU", value: "Intel HD 4000" },
     ],
     store: { label: "Play Free on Epic Games", url: "https://store.epicgames.com/en-US/p/fortnite" },
+    downloads: {
+      pc: { label: "Download from Epic Games", url: "https://store.epicgames.com/en-US/p/fortnite" },
+      mobile: { label: "Get on Google Play", url: "https://play.google.com/store/apps/details?id=com.epicgames.fortnite" },
+    },
     tags: ["Battle Royale", "Free-to-Play", "Multiplayer"],
   },
   {
@@ -223,6 +263,11 @@ export const games: Game[] = [
       { label: "GPU", value: "NVIDIA GTX 960 / AMD R7 370" },
     ],
     store: { label: "Play Free on Steam", url: "https://store.steampowered.com/app/578080/PUBG_BATTLEGROUNDS/" },
+    downloads: {
+      pc: { label: "Get on Microsoft Store", url: "https://apps.microsoft.com/detail/9NBLGGH4VWHJ" },
+      mobile: { label: "Get on Google Play", url: "https://play.google.com/store/apps/details?id=com.tencent.ig" },
+      ios: { label: "Get on App Store", url: "https://apps.apple.com/us/app/pubg-mobile/id1330123889" },
+    },
     tags: ["Battle Royale", "Survival", "FPS"],
   },
   {
@@ -245,6 +290,10 @@ export const games: Game[] = [
       { label: "GPU", value: "NVIDIA GTX 1060 3GB / AMD RX 580 4GB" },
     ],
     store: { label: "Buy on Steam", url: "https://store.steampowered.com/app/1245620/ELDEN_RING/" },
+    downloads: {
+      pc: { label: "Buy on Steam", url: "https://store.steampowered.com/app/1245620/ELDEN_RING/" },
+      console: { label: "Buy on Bandai Namco", url: "https://en.bandainamcoent.eu/elden-ring/elden-ring" },
+    },
     tags: ["RPG", "Souls-like", "Open World"],
   },
 ];

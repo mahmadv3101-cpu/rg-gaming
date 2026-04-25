@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Calendar, Download, HardDrive, Layers, Monitor, Star } from "lucide-react";
+import { ArrowLeft, Apple, Calendar, Download, Gamepad2, HardDrive, Layers, Monitor, Smartphone, Star } from "lucide-react";
 import { games, getGame } from "@/data/games";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/Reveal";
@@ -41,9 +41,15 @@ function GameDetailPage() {
   const similar = games.filter((g) => g.slug !== game.slug && g.genre === game.genre).slice(0, 4);
   const fallback = similar.length ? similar : games.filter((g) => g.slug !== game.slug).slice(0, 4);
 
+  const downloadButtons: { key: string; icon: JSX.Element; link?: { label: string; url: string }; gradient: string }[] = [
+    { key: "pc", icon: <Monitor className="mr-2 h-5 w-5" />, link: game.downloads.pc, gradient: "from-[var(--neon-blue)] to-[var(--neon-violet)]" },
+    { key: "mobile", icon: <Smartphone className="mr-2 h-5 w-5" />, link: game.downloads.mobile, gradient: "from-[var(--neon-violet)] to-[var(--neon-magenta)]" },
+    { key: "ios", icon: <Apple className="mr-2 h-5 w-5" />, link: game.downloads.ios, gradient: "from-[var(--neon-magenta)] to-[var(--neon-blue)]" },
+    { key: "console", icon: <Gamepad2 className="mr-2 h-5 w-5" />, link: game.downloads.console, gradient: "from-[var(--neon-blue)] to-[var(--neon-magenta)]" },
+  ];
+
   return (
     <div className="relative pt-28">
-      {/* Back */}
       <div className="mx-auto max-w-7xl px-4">
         <Link
           to="/games"
@@ -56,38 +62,25 @@ function GameDetailPage() {
       {/* Hero */}
       <section className="relative mt-6">
         <div className="absolute inset-0 -z-10 overflow-hidden">
-          <img
-            src={game.cover}
-            alt=""
-            aria-hidden
-            className="h-full w-full object-cover opacity-30 blur-2xl"
-          />
+          <img src={game.cover} alt="" aria-hidden className="h-full w-full object-cover opacity-30 blur-2xl" />
           <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/80 to-background" />
         </div>
 
         <div className="mx-auto grid max-w-7xl gap-10 px-4 lg:grid-cols-[420px_1fr] lg:gap-14">
           <Reveal>
             <div className="overflow-hidden rounded-3xl border border-border shadow-elevated">
-              <img
-                src={game.cover}
-                alt={`${game.title} cover`}
-                width={768}
-                height={1024}
-                className="aspect-[3/4] w-full object-cover"
-              />
+              <img src={game.cover} alt={`${game.title} cover`} width={768} height={1024} className="aspect-[3/4] w-full object-cover" />
             </div>
           </Reveal>
 
           <Reveal delay={120} className="flex flex-col justify-center">
             <div className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
               <span className="rounded-full glass px-3 py-1">{game.genre}</span>
-              {game.platforms.map((p) => (
+              {game.platforms.map((p: string) => (
                 <span key={p} className="rounded-full border border-border px-3 py-1">{p}</span>
               ))}
             </div>
-            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight md:text-6xl">
-              {game.title}
-            </h1>
+            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight md:text-6xl">{game.title}</h1>
             <div className="mt-3 flex items-center gap-4 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 <Star className="h-4 w-4 fill-[var(--neon-magenta)] text-[var(--neon-magenta)]" />
@@ -96,26 +89,38 @@ function GameDetailPage() {
               <span>•</span>
               <span>Released {new Date(game.releaseDate).getFullYear()}</span>
             </div>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              {game.description}
-            </p>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">{game.description}</p>
 
+            {/* Official download links per platform */}
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-violet)] text-white shadow-[0_10px_40px_-10px_var(--neon-violet)] transition-transform duration-300 hover:scale-[1.03]"
-              >
-                <a href={game.store.url} target="_blank" rel="noopener noreferrer">
-                  <Download className="mr-2 h-5 w-5" />
-                  {game.store.label}
-                </a>
-              </Button>
+              {downloadButtons
+                .filter((b) => b.link)
+                .map((b) => (
+                  <Button
+                    key={b.key}
+                    asChild
+                    size="lg"
+                    className={`rounded-full bg-gradient-to-r ${b.gradient} text-white shadow-[0_10px_40px_-10px_var(--neon-violet)] transition-transform duration-300 hover:scale-[1.03]`}
+                  >
+                    <a href={b.link!.url} target="_blank" rel="noopener noreferrer">
+                      {b.icon}
+                      {b.link!.label}
+                    </a>
+                  </Button>
+                ))}
               <Button asChild size="lg" variant="outline" className="rounded-full">
                 <a href={`https://www.youtube.com/watch?v=${game.trailerId}`} target="_blank" rel="noopener noreferrer">
                   Watch Trailer
                 </a>
               </Button>
+            </div>
+
+            {/* Official store fallback */}
+            <div className="mt-4 text-xs text-muted-foreground">
+              Official store:{" "}
+              <a href={game.store.url} target="_blank" rel="noopener noreferrer" className="text-foreground underline-offset-4 hover:underline">
+                {game.store.label}
+              </a>
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -153,7 +158,7 @@ function GameDetailPage() {
           <h2 className="mb-6 text-2xl font-semibold tracking-tight md:text-3xl">Screenshots</h2>
         </Reveal>
         <div className="grid gap-4 md:grid-cols-3">
-          {game.screenshots.map((src, i) => (
+          {game.screenshots.map((src: string, i: number) => (
             <Reveal key={i} delay={i * 100}>
               <div className="overflow-hidden rounded-2xl border border-border">
                 <img src={src} alt={`${game.title} screenshot ${i + 1}`} loading="lazy" className="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105" />
@@ -168,7 +173,7 @@ function GameDetailPage() {
         <Reveal>
           <h2 className="mb-6 text-2xl font-semibold tracking-tight md:text-3xl">System Requirements</h2>
           <div className="grid gap-4 rounded-3xl border border-border bg-[var(--gradient-card)] p-6 md:grid-cols-2 md:p-10">
-            {game.systemRequirements.map((r) => (
+            {game.systemRequirements.map((r: { label: string; value: string }) => (
               <div key={r.label} className="flex items-baseline justify-between gap-4 border-b border-border/60 pb-3 last:border-0">
                 <span className="text-sm uppercase tracking-wider text-muted-foreground">{r.label}</span>
                 <span className="text-right text-sm font-medium">{r.value}</span>
