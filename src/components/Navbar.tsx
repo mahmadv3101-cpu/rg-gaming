@@ -1,8 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Search, Download, Menu, X, Gamepad2 } from "lucide-react";
+import { Search, Download, Menu, X, Gamepad2, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const navItems = [
   { to: "/", label: "Home" },
@@ -11,11 +14,25 @@ const navItems = [
   { to: "/new-releases", label: "New Releases" },
   { to: "/categories", label: "Categories" },
   { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
 ] as const;
+
+// Smart link to Play Store on mobile / Microsoft Store on desktop
+const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=com.epicgames.fortnite";
+const MS_STORE_URL = "https://apps.microsoft.com/detail/9NBLGGH4TVD0";
+
+function getDownloadAppUrl() {
+  if (typeof navigator === "undefined") return MS_STORE_URL;
+  const ua = navigator.userAgent.toLowerCase();
+  const isMobile = /android|iphone|ipad|ipod|mobile/.test(ua);
+  return isMobile ? PLAY_STORE_URL : MS_STORE_URL;
+}
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -23,6 +40,16 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success("Signed out");
+    navigate({ to: "/" });
+  };
+
+  const handleDownloadApp = () => {
+    window.open(getDownloadAppUrl(), "_blank", "noopener,noreferrer");
+  };
 
   return (
     <header
@@ -38,7 +65,6 @@ export function Navbar() {
             scrolled ? "glass-strong shadow-elevated" : "glass"
           )}
         >
-          {/* Logo */}
           <Link to="/" className="group flex items-center gap-2.5">
             <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--neon-blue)] via-[var(--neon-violet)] to-[var(--neon-magenta)] shadow-[0_0_20px_-2px_var(--neon-violet)] transition-transform duration-500 group-hover:rotate-[18deg]">
               <Gamepad2 className="h-5 w-5 text-white" />
@@ -48,7 +74,6 @@ export function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop nav */}
           <nav className="hidden items-center gap-1 lg:flex">
             {navItems.map((item) => (
               <Link
@@ -66,7 +91,6 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* Actions */}
           <div className="hidden items-center gap-2 md:flex">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -76,11 +100,26 @@ export function Navbar() {
                 className="w-44 rounded-full border border-border bg-secondary/40 py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground/70 outline-none transition-all duration-300 focus:w-60 focus:border-[var(--neon-violet)] focus:shadow-[0_0_0_3px_color-mix(in_oklab,var(--neon-violet)_18%,transparent)]"
               />
             </div>
-            <Button variant="ghost" size="sm" className="rounded-full">
-              Login
-            </Button>
+            {user ? (
+              <>
+                <span className="hidden items-center gap-1.5 rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-xs text-muted-foreground xl:inline-flex">
+                  <UserIcon className="h-3.5 w-3.5" />
+                  {user.email?.split("@")[0]}
+                </span>
+                <Button variant="ghost" size="sm" className="rounded-full" onClick={handleLogout}>
+                  <LogOut className="mr-1.5 h-4 w-4" /> Logout
+                </Button>
+              </>
+            ) : (
+              <Link to="/auth">
+                <Button variant="ghost" size="sm" className="rounded-full">
+                  Login
+                </Button>
+              </Link>
+            )}
             <Button
               size="sm"
+              onClick={handleDownloadApp}
               className="rounded-full bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-violet)] text-white shadow-[0_8px_30px_-8px_var(--neon-violet)] transition-transform duration-300 hover:scale-[1.03] hover:shadow-[0_12px_40px_-8px_var(--neon-violet)]"
             >
               <Download className="mr-1.5 h-4 w-4" />
@@ -97,7 +136,6 @@ export function Navbar() {
           </button>
         </div>
 
-        {/* Mobile menu */}
         {open && (
           <div className="mt-2 rounded-2xl glass-strong p-4 lg:hidden">
             <nav className="flex flex-col gap-1">
@@ -113,9 +151,18 @@ export function Navbar() {
                 </Link>
               ))}
               <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
-                <Button variant="ghost" size="sm">Login</Button>
+                {user ? (
+                  <Button variant="ghost" size="sm" onClick={handleLogout}>
+                    <LogOut className="mr-1.5 h-4 w-4" /> Logout
+                  </Button>
+                ) : (
+                  <Link to="/auth" onClick={() => setOpen(false)}>
+                    <Button variant="ghost" size="sm" className="w-full">Login</Button>
+                  </Link>
+                )}
                 <Button
                   size="sm"
+                  onClick={handleDownloadApp}
                   className="bg-gradient-to-r from-[var(--neon-blue)] to-[var(--neon-violet)] text-white"
                 >
                   <Download className="mr-1.5 h-4 w-4" /> Download App
