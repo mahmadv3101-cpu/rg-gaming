@@ -1,26 +1,32 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Hero } from "@/components/home/Hero";
+import { FeaturedGames } from "@/components/home/FeaturedGames";
+import { CategoriesSection } from "@/components/home/CategoriesSection";
+import { TrendingSlider } from "@/components/home/TrendingSlider";
+import { NewsSection } from "@/components/home/NewsSection";
+import { CommunitySection } from "@/components/home/CommunitySection";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "GamingHub — Enter The Ultimate Gaming Universe" },
+      { name: "description", content: "Discover top games, trailers, reviews and direct official downloads in one premium hub. PC, PlayStation, Xbox and more." },
+      { property: "og:title", content: "GamingHub — Enter The Ultimate Gaming Universe" },
+      { property: "og:description", content: "Discover top games, trailers, reviews and direct official downloads in one premium hub." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  return (
+    <>
+      <Hero />
+      <FeaturedGames />
+      <CategoriesSection />
+      <TrendingSlider />
+      <NewsSection />
+      <CommunitySection />
+    </>
+  );
 }
