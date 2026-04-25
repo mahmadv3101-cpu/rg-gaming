@@ -41,7 +41,7 @@ function GameDetailPage() {
   const similar = games.filter((g) => g.slug !== game.slug && g.genre === game.genre).slice(0, 4);
   const fallback = similar.length ? similar : games.filter((g) => g.slug !== game.slug).slice(0, 4);
 
-  const downloadButtons: { key: string; icon: JSX.Element; link?: { label: string; url: string }; gradient: string }[] = [
+  const downloadButtons: { key: string; icon: React.ReactNode; link?: { label: string; url: string }; gradient: string }[] = [
     { key: "pc", icon: <Monitor className="mr-2 h-5 w-5" />, link: game.downloads.pc, gradient: "from-[var(--neon-blue)] to-[var(--neon-violet)]" },
     { key: "mobile", icon: <Smartphone className="mr-2 h-5 w-5" />, link: game.downloads.mobile, gradient: "from-[var(--neon-violet)] to-[var(--neon-magenta)]" },
     { key: "ios", icon: <Apple className="mr-2 h-5 w-5" />, link: game.downloads.ios, gradient: "from-[var(--neon-magenta)] to-[var(--neon-blue)]" },
